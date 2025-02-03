@@ -1,0 +1,24 @@
+{% extends "layout/app-layout.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center min-vh-100">
+    <div class="col-md-6 text-center">
+        {% if user.is_authenticated %}
+            <div class="alert alert-info">
+                <p>You are logged in as <strong>{{ user.username }}</strong>.</p>
+            </div>
+            <form method="post" class="d-grid">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-lg rounded-pill">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </button>
+            </form>
+        {% else %}
+            <div class="alert alert-warning">
+                <p>You are not currently logged in.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

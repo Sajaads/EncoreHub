@@ -1,0 +1,37 @@
+{% extends "layout/app-layout.html" %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <!-- Modal -->
+    <div class="modal fade show" tabindex="-1" style="display: block; background-color: rgba(0, 0, 0, 0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Booking Cancelled</h5>
+                </div>
+                <div class="modal-body">
+                    <p>{{ message }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="redirectButton">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Redirect automatically after 3 seconds
+    setTimeout(function() {
+        const redirectUrl = "{{ redirect_url }}";
+        window.location.href = redirectUrl;
+    }, 3000);
+
+    // Redirect when the user clicks the "OK" button
+    document.getElementById('redirectButton').onclick = function() {
+        const redirectUrl = "{{ redirect_url }}";
+        window.location.href = redirectUrl;
+    };
+</script>
+
+{% endblock %}

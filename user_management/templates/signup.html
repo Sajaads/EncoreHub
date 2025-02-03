@@ -1,0 +1,110 @@
+{% extends 'layout/app-layout.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm rounded-4 border-0">
+            <div class="card-body">
+                <h2 class="text-center mb-4">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </h2>
+                <form method="post" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <!-- Username -->
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Username:</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            {{ form.username|add_class:"form-control" }}
+                        </div>
+                        {% if form.username.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.username.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Name -->
+                    <div class="mb-3">
+                        <label for="id_name" class="form-label">Name:</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                            {{ form.name|add_class:"form-control" }}
+                        </div>
+                        <div class="form-text">Only letters, spaces, and periods (.) are allowed.</div>
+                        {% if form.name.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.name.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Email -->
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email:</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            {{ form.email|add_class:"form-control" }}
+                        </div>
+                        {% if form.email.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.email.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label for="id_password1" class="form-label">Password:</label>
+                        {{ form.password1|add_class:"form-control" }}
+                        <div class="form-text">Your password must contain at least 8 characters.</div>
+                        {% if form.password1.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.password1.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Password Confirmation -->
+                    <div class="mb-3">
+                        <label for="id_password2" class="form-label">Password confirmation:</label>
+                        {{ form.password2|add_class:"form-control" }}
+                        <div class="form-text">Enter the same password as before, for verification.</div>
+                        {% if form.password2.errors %}
+                            <div class="text-danger small">
+                                {% for error in form.password2.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success btn-lg rounded-pill">
+                            <i class="fas fa-check"></i> Sign Up
+                        </button>
+                    </div>
+                </form>
+                <!-- Login Link -->
+                <div class="text-center mt-3">
+                    <p class="mb-0">Already have an account? 
+                        <a href="{% url 'login' %}" class="text-decoration-none text-primary fw-bold">
+                            Login
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

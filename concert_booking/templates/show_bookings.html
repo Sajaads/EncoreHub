@@ -1,0 +1,34 @@
+{% extends "layout/app-layout.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-4">My Bookings</h1>
+    
+    <div class="row">
+        {% for booking in bookings %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ booking.concert.concert_name }}</h5>
+                    <p class="card-text">
+                        <strong>Date & Time:</strong> {{ booking.concert.date_time }}<br>
+                        <strong>Venue:</strong> {{ booking.concert.venue }}<br>
+                        <strong>Tickets Booked:</strong> {{ booking.tickets_booked }}<br>
+                    </p>
+                    <form action="{% url 'cancel_booking' booking.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i>Cancel Booking</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                You have not booked any concerts yet.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

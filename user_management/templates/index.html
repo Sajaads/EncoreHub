@@ -1,0 +1,48 @@
+{% extends "layout/app-layout.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row align-items-center">
+        <!-- Left Column: Image -->
+        <div class="col-md-6 mb-4">
+            <img src="https://images.unsplash.com/photo-1521334726092-b509a19597c6?q=80&w=1802&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="img-fluid rounded" alt="Exciting Concert">
+        </div>
+
+        <!--Right Column -->
+        <div class="col-md-6">
+            <h1 class="display-4 text-theme-blue">Experience the Magic of Live Music!</h1>
+            <p class="lead text-theme-light-gray">
+                Join us on a journey of unforgettable melodies, electric performances, and an atmosphere you’ll never forget. Whether you’re a fan of pop, rock, classical, or jazz, EncoreHub brings you closer to the music you love.
+            </p>
+            <p class="text-theme-light-gray">
+                Don’t miss out on the chance to secure your spot at the most sought-after concerts. Sign up today and be part of the music revolution!
+            </p>
+
+            <!-- Call-to-Action Buttons -->
+            <div class="d-flex flex-column flex-md-row gap-3">
+                {% if not user.is_authenticated %}
+                <a href="{% url 'signup' %}" class="btn btn-theme-purple btn-lg">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-outline-theme-purple btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> Log In
+                </a>
+                {% endif %}
+                <a href="{% url 'list_concerts' %}" class="btn btn-theme-green btn-lg">
+                    <i class="fas fa-list-music"></i> Explore Concerts
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Highlight Section -->
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <h2 class="text-secondary">Why Choose EncoreHub?</h2>
+            <p class="text-muted">
+                From exclusive early access to tickets to seamless booking and a diverse range of performances, EncoreHub ensures your concert experience is nothing short of extraordinary.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

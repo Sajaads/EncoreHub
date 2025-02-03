@@ -1,0 +1,21 @@
+# Ignore environment variables file
+.env
+
+# Virtual environment folders
+venv/
+env/
+
+# Django-specific ignores
+__pycache__/
+*.py[cod]
+*$py.class
+db.sqlite3
+*.log
+media/
+
+# VS Code settings
+.vscode/
+
+# macOS & Windows system files
+.DS_Store
+Thumbs.db

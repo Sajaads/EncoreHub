@@ -1,10 +1,20 @@
 from pyexpat.errors import messages
+import re
+import unicodedata
 from django.db import IntegrityError
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import TicketBooking
 from concert_management.models import Concert
 from django.urls import reverse
+#for pdf generation
+# from reportlab.lib.pagesizes import letter
+# from reportlab.lib import colors
+# from reportlab.pdfgen import canvas
+from django.template.loader import render_to_string
+from xhtml2pdf import pisa
+from django.http import HttpResponse
+from io import BytesIO
 
 @login_required(login_url='/login/')
 def book_ticket(request, pk):
@@ -54,9 +64,14 @@ def book_ticket(request, pk):
             concert.available_tickets -= tickets_booked
             concert.save()
 
+            #genenrate the qr code after succesfull booking
+            booking = TicketBooking.objects.filter(user=request.user, concert=concert).first()
+            qr_code = booking.generate_qr_code()
+
             return render(request, 'book_ticket.html', {
                 'concert': concert,
-                'success': f'Successfully booked {tickets_booked} tickets!'
+                'success': f'Successfully booked {tickets_booked} tickets!',
+                'qr_code': qr_code,
             })
 
         except ValueError:
@@ -148,3 +163,50 @@ def view_concert_bookings(request, concert_id):
     bookings = TicketBooking.objects.filter(concert=concert)
     
     return render(request, 'view_concert_bookings.html', {'concert': concert, 'bookings': bookings})
+
+#pdf generation of tickets
+# Function to generate the ticket PDF
+@login_required
+def generate_ticket_pdf(ticket_booking):
+    # Get the base64-encoded QR code
+    qr_code_base64 = ticket_booking.generate_qr_code()
+
+    context = {
+        'concert_name': ticket_booking.concert.concert_name,
+        'concert_date_time': ticket_booking.concert.date_time,
+        'concert_venue': ticket_booking.concert.venue,
+        'tickets_booked': ticket_booking.tickets_booked,
+        'user_name': ticket_booking.user.username,
+        'qr_code': qr_code_base64  # Pass QR code to the template
+    }
+    
+    # Render HTML content with the provided context
+    html_content = render_to_string('ticket_pdf.html', context)
+    
+    # Convert HTML to PDF using xhtml2pdf (Pisa)
+    pdf_buffer = BytesIO()
+    pisa_status = pisa.CreatePDF(html_content, dest=pdf_buffer)
+    
+    if pisa_status.err:
+        return None
+    pdf_buffer.seek(0)
+    return pdf_buffer.getvalue()
+
+def sanitize_filename(name):
+    # Normalize the string to remove accents and other diacritical marks
+    name = unicodedata.normalize('NFKD', name).encode('ASCII', 'ignore').decode('ASCII')
+    # Replace any non-alphanumeric characters (except spaces and underscores) with underscores
+    name = re.sub(r'[^a-zA-Z0-9 _-]', '_', name)
+    return name
+
+# View to handle ticket download
+@login_required
+def download_ticket(request, booking_id):
+    ticket_booking = get_object_or_404(TicketBooking, id=booking_id)
+    pdf = generate_ticket_pdf(ticket_booking)
+    
+    response = HttpResponse(pdf, content_type='application/pdf')
+    sanitized_concert_name = sanitize_filename(ticket_booking.concert.concert_name)
+    response['Content-Disposition'] = f'attachment; filename="ticket_for_{sanitized_concert_name}.pdf"'
+    return response
+

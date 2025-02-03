@@ -15,10 +15,21 @@
                         <strong>Venue:</strong> {{ booking.concert.venue }}<br>
                         <strong>Tickets Booked:</strong> {{ booking.tickets_booked }}<br>
                     </p>
+                    
+                    <!-- QR Code Section -->
+                    <div class="text-center my-3">
+                        <h6>Your Ticket QR Code:</h6>
+                        <img src="{{ booking.generate_qr_code }}" alt="QR Code" class="img-fluid rounded">
+                    </div>
+
                     <form action="{% url 'cancel_booking' booking.id %}" method="POST">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i>Cancel Booking</button>
                     </form>
+                    <!-- Download Ticket Button -->
+                    <a href="{% url 'download_ticket' booking.id %}" class="btn btn-success mt-3">
+                        <i class="fas fa-download"></i> Download Ticket
+                    </a>
                 </div>
             </div>
         </div>

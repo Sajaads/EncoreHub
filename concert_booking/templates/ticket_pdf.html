@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concert Ticket</title>
+    <style>
+        /* Add custom styles to match your site */
+        .ticket-card {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+        .ticket-card h1 {
+            color: #333;
+        }
+        .ticket-details {
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .qr-code {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="ticket-card">
+        <h1>EncoreHub</h1>
+        <div class="ticket-details">
+            <p><strong>Concert:</strong> {{ concert_name }}</p>
+            <p><strong>Date & Time:</strong> {{ concert_date_time }}</p>
+            <p><strong>Venue:</strong> {{ concert_venue }}</p>
+            <p><strong>Tickets Booked:</strong> {{ tickets_booked }}</p>
+            <p><strong>User:</strong> {{ user_name }}</p>
+        </div>
+        <div class="qr-code">
+            <img src="{{ qr_code }}" alt="QR Code" width="150">
+        </div>
+    </div>
+</body>
+</html>

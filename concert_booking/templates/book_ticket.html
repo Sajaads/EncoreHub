@@ -27,6 +27,12 @@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Book Tickets</button>
                     </form>
+                    {% if qr_code %}
+                        <div class="mt-4">
+                            <h5 class="text-center">Your QR Code</h5>
+                            <img src="{{ qr_code }}" class="img-fluid mx-auto d-block" alt="QR Code">
+                        </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

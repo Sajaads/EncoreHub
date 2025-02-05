@@ -8,9 +8,6 @@ from .models import TicketBooking
 from concert_management.models import Concert
 from django.urls import reverse
 #for pdf generation
-# from reportlab.lib.pagesizes import letter
-# from reportlab.lib import colors
-# from reportlab.pdfgen import canvas
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa
 from django.http import HttpResponse

@@ -38,6 +38,13 @@
                             </a>
                         </li>
                     {% endif %}
+                    {% if user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'visit_analytics' %}">
+                                <i class="fas fa-chart-bar"></i> Visit Analytics
+                            </a>
+                        </li>
+                        {% endif %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'logout' %}">
                         <i class="fas fa-sign-out-alt"></i> Logout

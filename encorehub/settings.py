@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from dotenv import load_dotenv
+from pymongo import MongoClient
 import os
 
 load_dotenv()
@@ -60,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'concert_management.middleware.TrackVisitsMiddleware',
 ]
 
 REST_FRAMEWORK = {
@@ -115,6 +117,12 @@ DATABASES = {
         'PORT': os.getenv("DB_PORT"),
     }
 }
+
+
+
+MONGO_CLIENT = MongoClient("mongodb://localhost:27017/")
+MONGO_DB = MONGO_CLIENT["encorehub"]  
+VISITS_COLLECTION = MONGO_DB["daily_visits"]
 
 
 # Password validation

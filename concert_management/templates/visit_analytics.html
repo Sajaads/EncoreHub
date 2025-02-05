@@ -1,0 +1,113 @@
+{% extends "layout/app-layout.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-4">Visit Analytics</h1>
+    
+    <div class="text-center mb-4">
+        <p>Below is a visualization of the daily visits to the website.</p>
+    </div>
+
+    <!-- Date Filters Section -->
+    <div class="card p-3 mb-4">
+        <form class="row g-3">
+            <div class="col-md-4">
+                <label for="start_date" class="form-label">Start Date:</label>
+                <input type="date" id="start_date" class="form-control">
+            </div>
+            <div class="col-md-4">
+                <label for="end_date" class="form-label">End Date:</label>
+                <input type="date" id="end_date" class="form-control">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="button" class="btn btn-primary" id="filterBtn">Apply Filter</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="d-flex justify-content-center">
+        <svg id="visitChart" width="800" height="400"></svg>
+    </div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            function fetchData(startDate = "", endDate = "") {
+                let url = "{% url 'get_visits' %}";
+                if (startDate && endDate) {
+                    url += `?start_date=${startDate}&end_date=${endDate}`;
+                }
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data.length) {
+                            console.log("No data available for the selected range.");
+                            return;
+                        }
+
+                        // Format date labels (YYYY-MM-DD)
+                        data.forEach(d => {
+                            d.date = new Date(d.date);
+                        });
+
+                        renderChart(data);
+                    })
+                    .catch(error => console.error("Error loading data:", error));
+            }
+
+            function renderChart(data) {
+                const svg = d3.select("#visitChart");
+                svg.selectAll("*").remove(); // Clear previous chart
+
+                const width = 800, height = 400, margin = { top: 20, right: 30, bottom: 50, left: 50 };
+                const chartWidth = width - margin.left - margin.right;
+                const chartHeight = height - margin.top - margin.bottom;
+
+                const xScale = d3.scaleBand()
+                    .domain(data.map(d => d.date.toISOString().split("T")[0])) // Format date
+                    .range([0, chartWidth])
+                    .padding(0.3);
+
+                const yScale = d3.scaleLinear()
+                    .domain([0, d3.max(data, d => d.count)])
+                    .nice()
+                    .range([chartHeight, 0]);
+
+                const chart = svg.append("g")
+                    .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
+                chart.append("g")
+                    .attr("transform", `translate(0, ${chartHeight})`)
+                    .call(d3.axisBottom(xScale))
+                    .selectAll("text")
+                    .attr("transform", "rotate(-45)")
+                    .style("text-anchor", "end");
+
+                chart.append("g").call(d3.axisLeft(yScale));
+
+                chart.selectAll(".bar")
+                    .data(data)
+                    .enter()
+                    .append("rect")
+                    .attr("class", "bar")
+                    .attr("x", d => xScale(d.date.toISOString().split("T")[0]))
+                    .attr("y", d => yScale(d.count))
+                    .attr("width", xScale.bandwidth())
+                    .attr("height", d => chartHeight - yScale(d.count))
+                    .attr("fill", "steelblue");
+            }
+
+            // Fetch initial data (last 7 days)
+            fetchData();
+
+            document.getElementById("filterBtn").addEventListener("click", () => {
+                const startDate = document.getElementById("start_date").value;
+                const endDate = document.getElementById("end_date").value;
+                fetchData(startDate, endDate);
+            });
+        });
+    </script>
+</div>
+{% endblock %}

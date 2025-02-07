@@ -8,6 +8,9 @@ from django.http import JsonResponse
 from encorehub.settings import VISITS_COLLECTION
 from datetime import datetime, timedelta
 from django.utils.dateparse import parse_date
+
+from django.core.cache import cache
+
 # Create your views here.
 @login_required
 def create_concert(request):
@@ -20,14 +23,34 @@ def create_concert(request):
         form = ConcertForm()  # Pass an empty form for GET requests
     return render(request, 'create_concert.html', {'form': form})
 
-
+#cashed view of concerts list
 @login_required
 def retrieve_concerts(request):
-    concert_list = Concert.objects.all()
-    paginator = Paginator(concert_list, 10)  # Show 15 concerts per page
-    page_number = request.GET.get('page')
+    page_number = int(request.GET.get('page', '1'))  # Default to page 1
+    cache_key = 'all_concerts'  # A single cache key for the entire dataset
+
+    # Check if the entire concerts list is cached
+    concert_list = cache.get(cache_key)
+
+    if concert_list is None:
+        # Retrieve all concerts from the database
+        concert_list = list(Concert.objects.all())  # Convert queryset to list to store in cache
+
+        # Cache the entire list of concerts for 1 hour
+        cache.set(cache_key, concert_list, timeout= 60 * 60)
+
+    # Apply pagination on the cached concerts list
+    paginator = Paginator(concert_list, 10)  # 10 items per page
     concerts = paginator.get_page(page_number)
+
     return render(request, 'list_concerts.html', {'concerts': concerts})
+
+#retrieve concerts without caching
+    # concert_list = Concert.objects.all()
+    # paginator = Paginator(concert_list, 10)  # Show 15 concerts per page
+    # page_number = request.GET.get('page')
+    # concerts = paginator.get_page(page_number)
+    # return render(request, 'list_concerts.html', {'concerts': concerts})
 
 @login_required
 def update_concert(request, pk):
@@ -58,7 +81,7 @@ def visit_analytics(request):
     """Render the visit analytics page (admin only)."""
     return render(request, "visit_analytics.html")
 
-def get_visit_data(request): # Use the existing connection
+def get_visit_data(request): #user for analytic view of visitors count
     visits_collection = VISITS_COLLECTION
 
     # Get the start and end date from the request parameters

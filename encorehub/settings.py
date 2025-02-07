@@ -120,9 +120,27 @@ DATABASES = {
 
 
 
+# MongoDB Configuration
+# MONGO_URI = os.getenv("MONGO_URI")
+# MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
+
+# MONGO_CLIENT = MongoClient(MONGO_URI)
+# MONGO_DB = MONGO_CLIENT[MONGO_DB_NAME]
+# VISITS_COLLECTION = MONGO_DB["daily_visits"]
 MONGO_CLIENT = MongoClient("mongodb://localhost:27017/")
 MONGO_DB = MONGO_CLIENT["encorehub"]  
 VISITS_COLLECTION = MONGO_DB["daily_visits"]
+# Redis Configuration
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": os.getenv("REDIS_URL"),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
 
 
 # Password validation

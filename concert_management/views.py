@@ -100,6 +100,6 @@ def get_visit_data(request): #user for analytic view of visitors count
     visit_data = list(visits_collection.find(
         {"date": {"$gte": str(start_date), "$lte": str(end_date)}},
         {"_id": 0, "date": 1, "count": 1}
-    ))
+    ).sort("date", -1))
 
     return JsonResponse(visit_data, safe=False)

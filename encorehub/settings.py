@@ -11,11 +11,14 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-from dotenv import load_dotenv
+import environ
 from pymongo import MongoClient
-import os
 
-load_dotenv()
+
+# Initialize environ
+env = environ.Env()
+# Read .env file (ensure you have a .env file in your project root)
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,13 +28,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = env.bool("DEBUG", default=False)
 
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost").split(",")
-
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost"])
 
 
 # Application definition
@@ -109,32 +111,26 @@ WSGI_APPLICATION = 'encorehub.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # or the database you're using
-        'NAME': os.getenv("DB_NAME"),
-        'USER': os.getenv("DB_USER"),
-        'PASSWORD': os.getenv("DB_PASSWORD"),
-        'HOST': os.getenv("DB_HOST"),
-        'PORT': os.getenv("DB_PORT"),
+        'ENGINE': 'django.db.backends.mysql',  # or another database backend
+        'NAME': env("DB_NAME"),
+        'USER': env("DB_USER"),
+        'PASSWORD': env("DB_PASSWORD"),
+        'HOST': env("DB_HOST"),
+        'PORT': env("DB_PORT", default="3306"),  # Default MySQL port
     }
 }
 
 
 
 # MongoDB Configuration
-# MONGO_URI = os.getenv("MONGO_URI")
-# MONGO_DB_NAME = os.getenv("MONGO_DB_NAME")
-
-# MONGO_CLIENT = MongoClient(MONGO_URI)
-# MONGO_DB = MONGO_CLIENT[MONGO_DB_NAME]
-# VISITS_COLLECTION = MONGO_DB["daily_visits"]
-MONGO_CLIENT = MongoClient("mongodb://localhost:27017/")
-MONGO_DB = MONGO_CLIENT["encorehub"]  
-VISITS_COLLECTION = MONGO_DB["daily_visits"]
+MONGO_CLIENT = MongoClient(env("MONGO_URI"))
+MONGO_DB = MONGO_CLIENT[env("MONGO_DB_NAME")]
+VISITS_COLLECTION = MONGO_DB[env("MONGO_COLLECTION_NAME", default="daily_visits")]
 # Redis Configuration
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": os.getenv("REDIS_URL"),
+        "LOCATION": env("REDIS_URL"),
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
